@@ -1,0 +1,15 @@
+Logging initialized 20200831T162857
+/usr/local/bin/kubectl
+NAME                           STATUS   ROLES    AGE     VERSION
+ip-10-0-134-255.ec2.internal   Ready    worker   6d16h   v1.18.3+012b3ec
+ip-10-0-136-231.ec2.internal   Ready    master   6d16h   v1.18.3+012b3ec
+ip-10-0-151-76.ec2.internal    Ready    worker   6d16h   v1.18.3+012b3ec
+ip-10-0-156-39.ec2.internal    Ready    master   6d16h   v1.18.3+012b3ec
+ip-10-0-167-162.ec2.internal   Ready    master   6d16h   v1.18.3+012b3ec
+/usr/local/bin/kustomize build config/crd | kubectl apply -f -
+customresourcedefinition.apiextensions.k8s.io/nexus.redhatgov.io unchanged
+cd config/manager && /usr/local/bin/kustomize edit set image controller=quay.io/redhatgov/nexus-operator:latest
+/usr/local/bin/kustomize build --load_restrictor none config/default | kubectl apply -f -
+Error: accumulating resources: accumulateFile "accumulating resources from '../rbac': read /Users/akrohg/projects/nexus-operator/config/rbac: is a directory", accumulateDirector: "recursed accumulation of path '/Users/akrohg/projects/nexus-operator/config/rbac': accumulating resources: accumulateFile \"accumulating resources from 'nexus_editor_role.yaml': open /Users/akrohg/projects/nexus-operator/config/rbac/nexus_editor_role.yaml: no such file or directory\", loader.New \"Error loading nexus_editor_role.yaml with git: url lacks orgRepo: nexus_editor_role.yaml, dir: evalsymlink failure on '/Users/akrohg/projects/nexus-operator/config/rbac/nexus_editor_role.yaml' : lstat /Users/akrohg/projects/nexus-operator/config/rbac/nexus_editor_role.yaml: no such file or directory, get: invalid source string: nexus_editor_role.yaml\""
+error: no objects passed to apply
+make: *** [deploy] Error 1

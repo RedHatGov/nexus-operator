@@ -1,6 +1,5 @@
 ---
 - version: v1alpha1
-  group: gpte.opentlc.com
+  group: redhatgov.io
   kind: Nexus
-  playbook: playbook.yml
-  reconcilePeriod: 120s
+  playbook: playbooks/nexus-operator.yml

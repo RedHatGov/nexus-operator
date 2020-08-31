@@ -1,0 +1,19 @@
+apiVersion: redhatgov.io/v1alpha1
+kind: Nexus
+metadata:
+  name: nexus-sample
+spec:
+  postgresql:
+    image:
+      src: postgres
+      tag: '10'
+  nexus:
+    expose:
+      ssl: false
+      kind: Ingress
+      uri: localhost
+    resources:
+      cpu:
+        request: 500m
+        limit: 1000m
+  persistent: false
