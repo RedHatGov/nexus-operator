@@ -1,16 +1,16 @@
-= Sonarqube Operator
+= nexus Operator
 
 == Overview
 
-This repository contains the code to build a Sonarqube Operator for Kubernetes, including Red Hat OpenShift Container Platform.
+This repository contains the code to build a nexus Operator for Kubernetes, including Red Hat OpenShift Container Platform.
 
-The Operator will create a *PostgreSQL* database and a *SonarQube* instance connected to the PostgreSQL database.
+The Operator will create a *PostgreSQL* database and a *nexus* instance connected to the PostgreSQL database.
 
 It is implemented on top of the Red Hat https://sdk.operatorframework.io/[Operator SDK] - in particular the https://sdk.operatorframework.io/docs/building-operators/ansible/[Ansible Operator].
 
 == Building the Operator
 
-There is a script `hack/operate.sh` which will download the prerequisites (operator-sdk etc.), build the operator artifacts from operator-sdk defaults, package and push the operator container image, deploy the artifacts to a Kubernetes cluster, and create a `kind: Sonarqube` CR to deploy an instance. You should use the help page to look at what the various options do, but for the most part if you want to deploy SonarQube to a cluster directly from this repo you could run `hack/operate.sh -d`.
+There is a script `hack/operate.sh` which will download the prerequisites (operator-sdk etc.), build the operator artifacts from operator-sdk defaults, package and push the operator container image, deploy the artifacts to a Kubernetes cluster, and create a `kind: nexus` CR to deploy an instance. You should use the help page to look at what the various options do, but for the most part if you want to deploy nexus to a cluster directly from this repo you could run `hack/operate.sh -d`.
 
 Before running the script make sure to update the location of the container image to a repository you have access to. If you decide to build your own container image for the operator, make sure to update `hack/operate.conf` with an updated container image location and add the `-p` flag to `operate.sh`.
 
@@ -18,7 +18,7 @@ Before running the script make sure to update the location of the container imag
 
 === Operator Installation Steps
 
-The installation of the Custom Resource Definition and Cluster Role requires *cluster-admin* privileges. After that regular users with `admin` privileges on their projects (which is automatically granted to the user who creates a project) can provision the SonarQube Operator in their projects and deploy instances of Sonarqube using the sonarqube.redhatgov.io Custom Resource.
+The installation of the Custom Resource Definition and Cluster Role requires *cluster-admin* privileges. After that regular users with `admin` privileges on their projects (which is automatically granted to the user who creates a project) can provision the nexus Operator in their projects and deploy instances of nexus using the nexus.redhatgov.io Custom Resource.
 
 Perform the following tasks as *cluster-admin*:
 
@@ -29,8 +29,8 @@ Perform the following tasks as *cluster-admin*:
 hack/operate.sh
 ----
 
-. Once the Operator pod is running the Operator is ready to start creating SonarQube Servers.
-. To deploy the above, and also one of the `config/samples/redhatgov_v1alpha1_sonarqube*.yaml` example CustomResources:
+. Once the Operator pod is running the Operator is ready to start creating nexus Servers.
+. To deploy the above, and also one of the `config/samples/redhatgov_v1alpha1_nexus*.yaml` example CustomResources:
 +
 [source,sh]
 ----
@@ -44,31 +44,31 @@ hack/operate.sh --deploy-cr
 hack/operate.sh --overlay=namespaced --namespace=mynamespace
 ----
 
-== Deploying a custom SonarQube instance using the Operator
+== Deploying a custom nexus instance using the Operator
 
-A SonarQube instance is deployed by creating a Custom Resource based on the sonarqube Custom Resource Definition.
+A nexus instance is deployed by creating a Custom Resource based on the nexus Custom Resource Definition.
 
 .Example
 
 [source,texinfo]
 ----
 apiVersion: redhatgov.io/v1alpha1
-kind: Sonarqube
+kind: nexus
 metadata:
-  name: sonarqube-example
+  name: nexus-example
 spec:
   postgresql:
     volumeSize: 1Gi
     image:
       src: registry.redhat.io/rhel8/postgresql-10
       tag: latest
-  sonarqube:
+  nexus:
     expose:
       ssl: true                                             # There is currently no way to specify an alternate certificate
-      uri: special-sonarqube-route.apps.cluster.example.com # You can leave this field out on OpenShift to get the default
+      uri: special-nexus-route.apps.cluster.example.com # You can leave this field out on OpenShift to get the default
       kind: Ingress                                         # This can be of kind Route on OpenShift
     image:
-      src: quay.io/redhatgov/sonarqube
+      src: quay.io/redhatgov/nexus
       tag: latest
       pullPolicy: IfNotPresent
     volumeSize: 1Gi                                         # Only matters if `persistent: true`
@@ -83,45 +83,45 @@ spec:
 
 ----
 
-. Write the definition to a file (e.g. sonarqube.yaml) and then create the SonarQube instance:
+. Write the definition to a file (e.g. nexus.yaml) and then create the nexus instance:
 +
 [source,sh]
 ----
-oc create -f ./sonarqube.yaml
+oc create -f ./nexus.yaml
 ----
 
-. The operator will first create the PostgreSQL database, wait until it is up and running and then create the SonarQube pod.
-. Validate that both pods (postgresql and sonarqube) are running before proceeding.
-. You can validate the existence of your SonarQube instance by querying for sonarqube objects:
+. The operator will first create the PostgreSQL database, wait until it is up and running and then create the nexus pod.
+. Validate that both pods (postgresql and nexus) are running before proceeding.
+. You can validate the existence of your nexus instance by querying for nexus objects:
 +
 [source,sh]
 ----
-oc get sonarqube
+oc get nexus
 ----
 
-. Get the Route for SonarQube (the PostgreSQL database is not accessible outside of the project):
+. Get the Route for nexus (the PostgreSQL database is not accessible outside of the project):
 +
 [source,sh]
 ----
 oc get route
 ----
 
-. Use the hostname returned in your Web Browser to open the SonarQube UI (default User ID is `admin` with password `admin`).
+. Use the hostname returned in your Web Browser to open the nexus UI (default User ID is `admin` with password `admin`).
 
-== Deleting a SonarQube instance
+== Deleting a nexus instance
 
-Deleting a SonarQube instance and its associated resources is as simple as deleting the sonarqube object. If you created a SonarQube server called `sonarqube-example` as in the example above it suffices to run the delete command on that resource:
+Deleting a nexus instance and its associated resources is as simple as deleting the nexus object. If you created a nexus server called `nexus-example` as in the example above it suffices to run the delete command on that resource:
 
 [source,sh]
 ----
-oc delete sonarqube sonarqube-example
+oc delete nexus nexus-example
 ----
 
-The Operator adds ownerReference fields to all created objects - which means that deleting the sonarqube object also deletes all objects that have been created by the Operator.
+The Operator adds ownerReference fields to all created objects - which means that deleting the nexus object also deletes all objects that have been created by the Operator.
 
-== Uninstalling the SonarQube Operator
+== Uninstalling the nexus Operator
 
-In case you wish to uninstall the SonarQube Operator make sure that there are no more SonarQube instances running. Once all SonarQube instances have been deleted simply delete the operator and its resources with:
+In case you wish to uninstall the nexus Operator make sure that there are no more nexus instances running. Once all nexus instances have been deleted simply delete the operator and its resources with:
 
 [source,sh]
 ----
@@ -134,15 +134,15 @@ The Operator SDK makes heavy use of Kustomize for development and installation, 
 
 To change the image sources for all necessary images for `hack/operate.sh` to deploy the operator, you need to have the following images hosted in a container repository on your disconnected network:
 
-. quay.io/redhatgov/sonarqube-operator:latest
-. quay.io/redhatgov/sonarqube:latest
+. quay.io/redhatgov/nexus-operator:latest
+. quay.io/redhatgov/nexus:latest
 . Some PostgreSQL 10 image that either behaves like the Red Hat PostgreSQL 10 RHEL 8 image or the docker.io/library/postgres:10 image.
 
 The places where you must update those sources are then, respectively:
 
-. `hack/operate.conf`: IMG should point to the sonarqube-operator image in your environment _before_ running `hack/operate.sh`
-. The `kind: Sonarqube` custom resource manifest: `spec.sonarqube.image.src` and `spec.sonarqube.image.tag` should be updated
-. The `kind: Sonarqube` custom resource manifest: `spec.postgresql.image.src` and `spec.postgresql.image.tag` should be updated
+. `hack/operate.conf`: IMG should point to the nexus-operator image in your environment _before_ running `hack/operate.sh`
+. The `kind: nexus` custom resource manifest: `spec.nexus.image.src` and `spec.nexus.image.tag` should be updated
+. The `kind: nexus` custom resource manifest: `spec.postgresql.image.src` and `spec.postgresql.image.tag` should be updated
 
 == OLM installation using a custom catalog source
 
