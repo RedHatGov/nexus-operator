@@ -3,11 +3,6 @@ kind: Nexus
 metadata:
   name: nexus-sample
 spec:
-  postgresql:
-    volumeSize: 1Gi
-    image:
-      src: postgres
-      tag: '10'
   nexus:
     expose:
       ssl: true                           # There is currently no way to specify an alternate certificate
@@ -17,5 +12,5 @@ spec:
       src: registry.connect.redhat.com/sonatype/nexus-repository-manager
       tag: latest
       pullPolicy: Always
-    volumeSize: 1Gi
+    volumeSize: 10Gi
   persistent: true

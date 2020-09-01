@@ -3,10 +3,6 @@ kind: Nexus
 metadata:
   name: nexus-sample
 spec:
-  postgresql:
-    image:
-      src: postgres
-      tag: '10'
   nexus:
     expose:
       ssl: false
