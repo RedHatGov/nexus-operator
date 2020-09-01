@@ -18,6 +18,7 @@
       _nexus_expose_method: "{{ nexus.expose.kind | default('Route') }}"
       _nexus_expose_uri: "{{ nexus.expose.uri | default('') }}"
       _nexus_ssl: "{{ nexus.expose.ssl | default(True) }}"
+      _nexus_oauth: "{{ nexus.expose.oauth | default(True) }}"
 
       _nexus_image: "{{ nexus.image.src | default('registry.connect.redhat.com/sonatype/nexus-repository-manager') }}"
       _nexus_image_tag: "{{ nexus.image.tag | default('latest') }}"

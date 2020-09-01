@@ -1,0 +1,21 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1beta1
+metadata:
+  name: "{{ _nexus_name }}"
+  namespace: "{{ _nexus_namespace }}"
+  labels:
+    app: "{{ _nexus_name }}"
+spec:
+{% if _nexus_ssl|d(False)|bool %}
+  tls:
+  - hosts:
+    - "{{ _nexus_expose_uri }}"
+{% endif %}
+  rules:
+  - host: "{{ _nexus_expose_uri }}"
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: "{{ _nexus_name }}"
+          servicePort: 8081

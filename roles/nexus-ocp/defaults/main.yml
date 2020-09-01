@@ -1,0 +1,23 @@
+---
+_nexus_state: present
+_nexus_namespace: nexus
+_nexus_name: nexus
+
+_nexus_persistent: true
+_nexus_volume_size: 10Gi
+
+_nexus_memory_request: 4Gi
+_nexus_memory_limit: 4Gi
+_nexus_cpu_request: 1
+_nexus_cpu_limit: 4
+
+_nexus_wait_for_init: true
+
+_nexus_image: registry.connect.redhat.com/sonatype/nexus-repository-manager
+_nexus_image_tag: latest
+_nexus_image_pull_policy: IfNotPresent
+
+_nexus_expose_method: Route
+_nexus_expose_uri: ""
+_nexus_route: "{{ _nexus_expose_uri }}"
+_nexus_ssl: True

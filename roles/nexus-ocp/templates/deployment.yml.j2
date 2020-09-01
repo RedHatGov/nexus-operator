@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ _nexus_name }}"
+  namespace: "{{ _nexus_namespace }}"
+  labels:
+    tuned.openshift.io/elasticsearch: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ _nexus_name }}"
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: "{{ _nexus_name }}"
+        tuned.openshift.io/elasticsearch: "true"
+    spec:
+      serviceAccountName: "{{ _nexus_name }}"
+      containers:
+{% if _nexus_oauth|bool %}
+      - name: oauth-proxy
+        image: 'openshift/oauth-proxy:latest'
+        args:
+          - '--https-address='
+          - '--http-address=:4180'
+          - '--provider=openshift'
+          - '--openshift-service-account={{ _nexus_name }}'
+          - '--upstream=http://localhost:8081'
+          - '--cookie-secret=SECRET'
+        ports:
+          - name: public
+            containerPort: 4180
+            protocol: TCP
+        imagePullPolicy: {{ _nexus_image_pull_policy }}
+{% endif %}
+      - name: nexus-server
+        image: "{{ _nexus_image }}:{{ _nexus_image_tag }}"
+        imagePullPolicy: {{ _nexus_image_pull_policy }}
+        ports:
+        - containerPort: 8081
+          protocol: TCP
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8081
+            scheme: HTTP
+          initialDelaySeconds: 20
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8081
+            scheme: HTTP
+          initialDelaySeconds: 40
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: "{{ _nexus_cpu_request }}"
+            memory: "{{ _nexus_memory_request}}"
+          limits:
+            cpu: "{{ _nexus_cpu_limit}}"
+            memory: "{{ _nexus_memory_limit }}"
+        env:
+        - name: INSTALL4J_ADD_VM_PARAMS
+          value: -Xms3436m -Xmx3436m -XX:MaxDirectMemorySize=4295m -Djava.util.prefs.userRoot=${NEXUS_DATA}/javaprefs
+{% if _nexus_persistent|bool %}
+        volumeMounts:
+        - name: nexus-data
+          mountPath: /nexus-data
+      volumes:
+      - name: nexus-data
+        persistentVolumeClaim:
+          claimName: "{{ _nexus_name }}-pvc"
+{% endif %}
