@@ -8,6 +8,7 @@ spec:
       ssl: false
       kind: Ingress
       uri: localhost
+      oauth: false
     resources:
       cpu:
         request: 500m
