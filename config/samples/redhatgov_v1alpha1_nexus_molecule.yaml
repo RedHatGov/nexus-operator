@@ -11,6 +11,7 @@ spec:
       oauth: false
     resources:
       cpu:
-        request: 500m
-        limit: 1000m
-  persistent: false
+        request: 2000m
+        limit: 2000m
+    volumeSize: 10Gi
+  persistent: true
