@@ -1,7 +1,7 @@
 apiVersion: redhatgov.io/v1alpha1
 kind: Nexus
 metadata:
-  name: nexus-sample
+  name: nexus-molecule
 spec:
   nexus:
     expose:
