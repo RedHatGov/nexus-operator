@@ -48,3 +48,101 @@
   retries: 50
   delay: 10
   ignore_errors: yes
+
+- name: Wait for Nexus to respond to requests
+  uri:
+    url: 'https://nexus-sample-nexus-operator-system.apps.cluster-a755.a755.example.opentlc.com'
+    return_content: yes
+    validate_certs: no
+  register: nexus_endpoint
+  until: nexus_endpoint.status == 200
+  retries: 20
+  delay: 30
+
+
+- name: Get the nexus pod
+  k8s_info:
+    namespace: "{{ _nexus_namespace }}"
+    kind: Pod
+    label_selectors:
+    - app = "{{ _nexus_name }}"
+  register: nexus_pod
+
+- set_fact:
+    nexus_pod_name: '{{ nexus_pod.resources[0].metadata.name }}'
+
+- name: Get admin.password file
+  community.kubernetes.k8s_exec:
+    namespace: "{{ _nexus_namespace }}"
+    pod: '{{ nexus_pod_name }}'
+    container: nexus-server
+    command: cat /nexus-data/admin.password
+  register: admin_password_file
+  ignore_errors: True
+
+- name: End here when server has already been configured (since we don't know the password)
+  meta: end_play
+  when: admin_password_file.stderr_lines|length > 0
+
+- set_fact:
+    admin_password: '{{ admin_password_file.stdout }}'
+
+- name: Get nexus.properties
+  community.kubernetes.k8s_exec:
+    namespace: "{{ _nexus_namespace }}"
+    pod: '{{ nexus_pod_name }}'
+    container: nexus-server
+    command: cat /nexus-data/etc/nexus.properties
+  register: properties
+
+- name: Add script creation to nexus.properties
+  community.kubernetes.k8s_exec:
+    namespace: "{{ _nexus_namespace }}"
+    pod: '{{ nexus_pod_name }}'
+    container: nexus-server
+    command: bash -c "echo nexus.scripts.allowCreation=true >> /nexus-data/etc/nexus.properties"
+  when: '"nexus.scripts.allowCreation=true" not in properties.stdout'
+
+- name: Restart nexus
+  community.kubernetes.k8s:
+    namespace: "{{ _nexus_namespace }}"
+    kind: Pod
+    name: '{{ nexus_pod_name }}'
+    state: absent
+
+- name: Wait for Nexus to respond to requests
+  uri:
+    url: 'https://nexus-sample-nexus-operator-system.apps.cluster-a755.a755.example.opentlc.com'
+    return_content: yes
+    validate_certs: no
+  register: nexus_endpoint
+  until: nexus_endpoint.status == 200
+  retries: 20
+  delay: 30
+
+- name: Add script to enable Rut Auth
+  shell: >-
+    devsecops-api nexus add-script
+    https://nexus-sample-nexus-operator-system.apps.cluster-a755.a755.example.opentlc.com
+    --login-username admin --login-password test
+    --script-name 'rut-auth' --script-content "import groovy.json.JsonOutput; import org.sonatype.nexus.capability.CapabilityReference; import org.sonatype.nexus.capability.CapabilityType; import org.sonatype.nexus.internal.capability.DefaultCapabilityReference; import org.sonatype.nexus.internal.capability.DefaultCapabilityRegistry; returnValue = JsonOutput.toJson([result : 'Did NOT add Rut Auth']); def capabilityRegistry = container.lookup(DefaultCapabilityRegistry.class.getName()); def capabilityType = CapabilityType.capabilityType('rutauth'); def capabilityProps = ['httpHeader': 'X-Forwarded-User']; def capabilityNotes = 'Configured by the nexus-operator'; DefaultCapabilityReference existing = capabilityRegistry.all.find { CapabilityReference capabilityReference -> capabilityReference.context().descriptor().type() == capabilityType}; if (!existing) { log.info('Rut Auth capability created as: {}', capabilityRegistry.add(capabilityType, true, capabilityNotes, capabilityProps).toString()); returnValue = JsonOutput.toJson([result : 'Successfully added Rut Auth!']) }; return returnValue"
+    --script-type 'groovy'
+
+- name: Run script to enable Rut Auth
+  shell: >-
+    devsecops-api nexus run-script
+    https://nexus-sample-nexus-operator-system.apps.cluster-a755.a755.example.opentlc.com
+    --login-username admin --login-password test
+    --script-name 'rut-auth'
+
+- name: Switch the Service to the OAuth endpoint
+  k8s:
+    state: "{{ _nexus_state }}"
+    merge_type:
+    - strategic-merge
+    - merge
+    definition: "{{ lookup('template', item) | from_yaml }}"
+  loop:
+  - service_oauth.yml.j2
+
+

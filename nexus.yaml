@@ -2,4 +2,7 @@ apiVersion: redhatgov.io/v1alpha1
 kind: Nexus
 metadata:
   name: nexus-sample
-spec: {}
+spec: 
+  nexus:
+    expose:
+      oauth: true

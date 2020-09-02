@@ -68,6 +68,9 @@ spec:
                       ssl:
                         description: Defines SSL/TLS state, if your IngressController/Router supports it
                         type: boolean
+                      oauth:
+                        description: Include a sidecar to leverage OpenShift OAuth
+                        type: boolean
                   image:
                     description: Defines the ways in which the Nexus image should be sourced and managed
                     type: object
