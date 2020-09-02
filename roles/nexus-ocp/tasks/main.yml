@@ -50,6 +50,10 @@
   delay: 10
   ignore_errors: yes
 
+- name: End here when oauth need not be configured
+  meta: end_play
+  when: not _nexus_oauth
+
 - name: Get the nexus pod
   k8s_info:
     namespace: "{{ _nexus_namespace }}"

@@ -19,5 +19,6 @@ _nexus_image_pull_policy: IfNotPresent
 
 _nexus_expose_method: Route
 _nexus_expose_uri: ""
+_nexus_oauth: True
 _nexus_route: "{{ _nexus_expose_uri }}"
 _nexus_ssl: True
