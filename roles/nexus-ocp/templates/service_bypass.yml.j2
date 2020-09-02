@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: "{{ _nexus_name }}"
+  name: "{{ _nexus_name }}-bypass"
   namespace: "{{ _nexus_namespace }}"
   labels:
     app: "{{ _nexus_name }}"
@@ -11,7 +11,7 @@ spec:
   ports:
   - name: nexus
     protocol: TCP
-    port: 4180
-    targetPort: 4180
+    port: 8081
+    targetPort: 8081
   sessionAffinity: None
   type: ClusterIP

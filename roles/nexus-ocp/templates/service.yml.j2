@@ -11,7 +11,12 @@ spec:
   ports:
   - name: nexus
     protocol: TCP
+{% if _nexus_oauth|bool %}
+    port: 4180
+    targetPort: 4180
+{% else %}
     port: 8081
     targetPort: 8081
+{% endif %}
   sessionAffinity: None
   type: ClusterIP
