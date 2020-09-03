@@ -13,5 +13,4 @@ spec:
       cpu:
         request: 2000m
         limit: 2000m
-    volumeSize: 2Gi
-  persistent: true
+  persistent: false

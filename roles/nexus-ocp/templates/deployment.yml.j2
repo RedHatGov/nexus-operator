@@ -73,12 +73,14 @@ spec:
         env:
         - name: INSTALL4J_ADD_VM_PARAMS
           value: -Xms3436m -Xmx3436m -XX:MaxDirectMemorySize=4295m -Djava.util.prefs.userRoot=${NEXUS_DATA}/javaprefs
-{% if _nexus_persistent|bool %}
         volumeMounts:
         - name: nexus-data
           mountPath: /nexus-data
       volumes:
       - name: nexus-data
+{% if _nexus_persistent|bool %}
         persistentVolumeClaim:
           claimName: "{{ _nexus_name }}-pvc"
+{% else %}
+        emptyDir: {}
 {% endif %}
