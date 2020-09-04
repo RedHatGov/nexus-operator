@@ -1,7 +1,7 @@
----
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  creationTimestamp: null
   name: nexus.redhatgov.io
 spec:
   group: redhatgov.io
@@ -13,10 +13,6 @@ spec:
   scope: Namespaced
   versions:
   - name: v1alpha1
-    served: true
-    storage: true
-    subresources:
-      status: {}
     schema:
       openAPIV3Schema:
         description: Nexus is the Schema for the nexus API
@@ -39,106 +35,111 @@ spec:
             type: object
           spec:
             description: Spec defines the desired state of Nexus
-            type: object
             properties:
-              persistent:
-                description: |
-                  Defines whether your Nexus instance should retain state when the Pods are
-                  terminated and restarted
-                type: boolean
               nexus:
                 description: Defines the desired state of the Nexus Deployment
-                type: object
                 properties:
                   expose:
                     description: Defines the ways in which Nexus should be exposed
-                    type: object
                     properties:
                       kind:
                         description: The kind of resource to use to expose Nexus
-                        type: string
                         enum:
                         - Route
                         - Ingress
                         - None
-                      uri:
-                        description: The URI that should be exposed for Nexus (do not include protocol)
                         type: string
-                        pattern: ^[^{}/ :\\]+(?::\d+)?$
-                      ssl:
-                        description: Defines SSL/TLS state, if your IngressController/Router supports it
-                        type: boolean
+                        default: Route
                       oauth:
                         description: Include a sidecar to leverage OpenShift OAuth
                         type: boolean
+                        default: true
+                      ssl:
+                        description: Defines SSL/TLS state, if your IngressController/Router supports it
+                        type: boolean
+                        default: true
+                      uri:
+                        description: The URI that should be exposed for Nexus (do not include protocol)
+                        pattern: ^[^{}/ :\\]+(?::\d+)?$
+                        type: string
+                    type: object
                   image:
                     description: Defines the ways in which the Nexus image should be sourced and managed
-                    type: object
                     properties:
+                      pullPolicy:
+                        description: |
+                          Defines the pullPolicy that should be applied to the image on the Deployment resource
+                        enum:
+                        - Always
+                        - IfNotPresent
+                        - Never
+                        type: string
+                        default: IfNotPresent
                       src:
                         description: Defines the registry source and image name for the Nexus image
                         type: string
                       tag:
                         description: Defines the specific tag to use for the Nexus image
                         type: string
-                      pullPolicy:
-                        description: |
-                          Defines the pullPolicy that should be applied to the image on the Deployment resource
-                        type: string
-                        enum:
-                        - Always
-                        - IfNotPresent
-                        - Never
-                  volumeSize:
-                    description: |
-                      Defines the size of the volume, measured in bytes, that should be requested for Nexus's data
-                      directory
-                    type: string
-                    pattern: ^[0-9]+[EPTGMK]?i?$
+                    type: object
                   resources:
                     description: Defines the resource constraints that should apply to Nexus
-                    type: object
                     properties:
                       cpu:
                         description: Defines the CPU constraints that should apply to Nexus
-                        type: object
                         properties:
+                          limit:
+                            description: How much CPU, measured in cores or millicores, should Nexus be limited to
+                            pattern: ^[0-9]+m?$
+                            type: string
+                            default: 200m
                           request:
                             description: |
                               How much CPU, measured in cores or millicores, should Nexus be expected to always
                               have access to
-                            type: string
                             pattern: ^[0-9]+m?$
-                          limit:
-                            description: How much CPU, measured in cores or millicores, should Nexus be limited to
                             type: string
-                            pattern: ^[0-9]+m?$
+                            default: 500m
+                        type: object
                       memory:
                         description: Defines the memory constraints that should apply to Nexus
-                        type: object
                         properties:
+                          limit:
+                            description: How much memory, measured in bytes, should Nexus be limited to
+                            pattern: ^[0-9]+[EPTGMK]?i?$
+                            type: string
+                            default: 512Mi
                           request:
                             description: |
                               How much memory, measured in bytes, should Nexus be expected to always have access to
-                            type: string
                             pattern: ^[0-9]+[EPTGMK]?i?$
-                          limit:
-                            description: How much memory, measured in bytes, should Nexus be limited to
                             type: string
-                            pattern: ^[0-9]+[EPTGMK]?i?$
+                            default: 512Mi
+                        type: object
+                    type: object
+                  volumeSize:
+                    description: |
+                      Defines the size of the volume, measured in bytes, that should be requested for Nexus's data
+                      directory
+                    pattern: ^[0-9]+[EPTGMK]?i?$
+                    type: string
+                    default: 10Gi
+                type: object
+              persistent:
+                description: |
+                  Defines whether your Nexus instance should retain state when the Pods are
+                  terminated and restarted
+                type: boolean
+            type: object
           status:
             description: Status defines the observed state of Nexus
-            type: object
             properties:
               conditions:
                 description: The conditions reported by the Ansible operator
-                type: array
                 items:
-                  type: object
                   properties:
                     ansibleResult:
                       description: The result reported from the last playbook run
-                      type: object
                       properties:
                         changed:
                           description: The number of tasks that resulted in a change
@@ -155,10 +156,11 @@ spec:
                         skipped:
                           description: The number of tasks that were skipped
                           type: integer
+                      type: object
                     lastTransitionTime:
                       description: The last time the playbook was invoked following a watch
-                      type: string
                       format: date-time
+                      type: string
                     message:
                       description: The last message reported from the Ansible Operator SDK
                       type: string
@@ -171,5 +173,17 @@ spec:
                     type:
                       description: The type of status change event
                       type: string
+                  type: object
+                type: array
+            type: object
         type: object
-
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: null
+  storedVersions: null
