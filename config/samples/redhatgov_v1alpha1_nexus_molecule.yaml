@@ -9,8 +9,14 @@ spec:
       kind: Ingress
       uri: localhost
       oauth: false
+    image:
+      src: sonatype/nexus3
+      tag: latest
     resources:
       cpu:
-        request: 500m
-        limit: 1000m
+        request: 2000m
+        limit: 3000m
+      memory:
+        request: 1024Mi
+        limit: 1024Mi
   persistent: false
