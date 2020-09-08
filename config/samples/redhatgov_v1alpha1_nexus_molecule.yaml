@@ -14,9 +14,9 @@ spec:
       tag: latest
     resources:
       cpu:
-        request: 2000m
-        limit: 3000m
+        request: 500m
+        limit: 1000m
       memory:
-        request: 1024Mi
-        limit: 1024Mi
+        request: 512Mi
+        limit: 512Mi
   persistent: false
