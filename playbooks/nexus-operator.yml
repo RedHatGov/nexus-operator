@@ -27,7 +27,7 @@
       _nexus_persistent: "{{ persistent | default(True) }}"
       _nexus_volume_size: "{{ nexus.volumeSize | default('10Gi') }}"
 
-      _nexus_memory_request: "{{ nexus.resources.memory.request | default('4Gi') }}"
-      _nexus_memory_limit: "{{ nexus.resources.memory.limit | default('4Gi') }}"
+      _nexus_memory_request: "{{ nexus.resources.memory.request | default('2Gi') }}"
+      _nexus_memory_limit: "{{ nexus.resources.memory.limit | default('3Gi') }}"
       _nexus_cpu_request: "{{ nexus.resources.cpu.request | default(1) }}"
       _nexus_cpu_limit: "{{ nexus.resources.cpu.limit | default(4) }}"

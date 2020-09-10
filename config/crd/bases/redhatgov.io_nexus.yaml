@@ -172,4 +172,3 @@ spec:
                       description: The type of status change event
                       type: string
         type: object
-
