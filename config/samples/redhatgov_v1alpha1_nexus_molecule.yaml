@@ -17,6 +17,6 @@ spec:
         request: 500m
         limit: 1000m
       memory:
-        request: 512Mi
-        limit: 512Mi
+        request: 1024Mi
+        limit: 1024Mi
   persistent: false
