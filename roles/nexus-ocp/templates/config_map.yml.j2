@@ -4,6 +4,4 @@ metadata:
   name: "{{ _nexus_name }}-config"
   namespace: "{{ _nexus_namespace }}"
 data:
-{% if _nexus_oauth|bool %}
-  nexus.properties: nexus.scripts.allowCreation=true
-{% endif %}
+  nexus.properties: nexus.scripts.allowCreation={{ _nexus_oauth }}
