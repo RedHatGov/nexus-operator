@@ -1,0 +1,7 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: "{{ _nexus_name }}-config"
+  namespace: "{{ _nexus_namespace }}"
+data:
+  nexus.properties: nexus.scripts.allowCreation={{ _nexus_oauth }}
