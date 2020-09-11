@@ -19,6 +19,16 @@ spec:
         tuned.openshift.io/elasticsearch: "true"
     spec:
       serviceAccountName: "{{ _nexus_name }}"
+      initContainers:
+      - name: init
+        image: registry.access.redhat.com/ubi8/ubi-minimal
+        command:
+          - bash
+          - -c
+          - "mkdir -p /nexus-data/etc/; ln -s /opt/nexus/config/nexus.properties /nexus-data/etc/nexus.properties"
+        volumeMounts:
+        - name: nexus-data
+          mountPath: /nexus-data
       containers:
 {% if _nexus_oauth|bool %}
       - name: oauth-proxy
@@ -76,7 +86,12 @@ spec:
         volumeMounts:
         - name: nexus-data
           mountPath: /nexus-data
+        - name: nexus-config
+          mountPath: /opt/nexus/config
       volumes:
+      - name: nexus-config
+        configMap:
+          name: "{{ _nexus_name }}-config"
       - name: nexus-data
 {% if _nexus_persistent|bool %}
         persistentVolumeClaim:
