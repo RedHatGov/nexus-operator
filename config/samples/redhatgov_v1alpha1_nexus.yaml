@@ -8,10 +8,13 @@ spec:
       ssl: true                           # There is currently no way to specify an alternate certificate
       uri: nexus-sample.example.com   # You can leave this field out on OpenShift to get the default
       kind: Ingress                       # This can be of kind Route on OpenShift (the default)
-      oauth: false
     image:
       src: registry.connect.redhat.com/sonatype/nexus-repository-manager
       tag: latest
       pullPolicy: Always
     volumeSize: 10Gi
+    oauth:
+      enabled: true
+      adminUsers:
+      - openshift-admin
   persistent: true

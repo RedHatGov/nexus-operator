@@ -18,14 +18,17 @@
       _nexus_expose_method: "{{ nexus.expose.kind | default('Route') }}"
       _nexus_expose_uri: "{{ nexus.expose.uri | default('') }}"
       _nexus_ssl: "{{ nexus.expose.ssl | default(True) }}"
-      _nexus_oauth: "{{ nexus.expose.oauth | default(True) }}"
 
       _nexus_image: "{{ nexus.image.src | default('registry.connect.redhat.com/sonatype/nexus-repository-manager') }}"
       _nexus_image_tag: "{{ nexus.image.tag | default('latest') }}"
-      _nexus_image_pull_policy: "{{ nexus.image.pullPolicy | default('IfNotPresent') }}"
+      _nexus_image_pull_policy: "{{ nexus.image.pull_policy | default('IfNotPresent') }}"
 
       _nexus_persistent: "{{ persistent | default(True) }}"
-      _nexus_volume_size: "{{ nexus.volumeSize | default('10Gi') }}"
+      _nexus_volume_size: "{{ nexus.volume_size | default('10Gi') }}"
+
+      _nexus_anonymous: "{{ nexus.allow_anonymous_access | default(False) }}"
+      _nexus_oauth: "{{ nexus.oauth.enabled | default(True) }}"
+      _nexus_admin_users: "{{ nexus.oauth.admin_users | default([]) }}"
 
       _nexus_memory_request: "{{ nexus.resources.memory.request | default('2Gi') }}"
       _nexus_memory_limit: "{{ nexus.resources.memory.limit | default('3Gi') }}"
