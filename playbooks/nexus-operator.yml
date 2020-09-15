@@ -29,6 +29,7 @@
       _nexus_anonymous: "{{ nexus.allow_anonymous_access | default(False) }}"
       _nexus_oauth: "{{ nexus.oauth.enabled | default(True) }}"
       _nexus_admin_users: "{{ nexus.oauth.admin_users | default([]) }}"
+      _nexus_bypass_auth_for: "{{ nexus.oauth.bypass_auth_for | default([]) }}"
 
       _nexus_memory_request: "{{ nexus.resources.memory.request | default('2Gi') }}"
       _nexus_memory_limit: "{{ nexus.resources.memory.limit | default('3Gi') }}"
