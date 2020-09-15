@@ -21,10 +21,10 @@
 
       _nexus_image: "{{ nexus.image.src | default('registry.connect.redhat.com/sonatype/nexus-repository-manager') }}"
       _nexus_image_tag: "{{ nexus.image.tag | default('latest') }}"
-      _nexus_image_pull_policy: "{{ nexus.image.pullPolicy | default('IfNotPresent') }}"
+      _nexus_image_pull_policy: "{{ nexus.image.pull_policy | default('IfNotPresent') }}"
 
       _nexus_persistent: "{{ persistent | default(True) }}"
-      _nexus_volume_size: "{{ nexus.volumeSize | default('10Gi') }}"
+      _nexus_volume_size: "{{ nexus.volume_size | default('10Gi') }}"
 
       _nexus_anonymous: "{{ nexus.allow_anonymous_access | default(False) }}"
       _nexus_oauth: "{{ nexus.oauth.enabled | default(True) }}"
