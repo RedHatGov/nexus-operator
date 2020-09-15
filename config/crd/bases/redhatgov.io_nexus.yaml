@@ -66,6 +66,11 @@ spec:
                         type: array
                         items:
                           type: string
+                      bypassAuthFor:
+                        description: List of paths to allow through the oauth filter (using regex)
+                        type: array
+                        items:
+                          type: string
                   expose:
                     description: Defines the ways in which Nexus should be exposed
                     type: object

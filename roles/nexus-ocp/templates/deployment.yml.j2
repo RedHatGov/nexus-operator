@@ -40,6 +40,9 @@ spec:
           - '--openshift-service-account={{ _nexus_name }}'
           - '--upstream=http://localhost:8081'
           - '--cookie-secret=SECRET'
+{% for path in _nexus_bypass_auth_for %}
+          - '--bypass-auth-for={{ path }}'
+{% endfor %}
         ports:
           - name: public
             containerPort: 4180

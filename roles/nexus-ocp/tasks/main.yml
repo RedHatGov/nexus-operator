@@ -108,6 +108,7 @@
     --script-name 'rut-auth'
 
 - name: Add user {{ item }}
+  when: _nexus_oauth
   shell: >-
     devsecops-api nexus add-user
     http://{{ _nexus_name }}-bypass.{{ _nexus_namespace }}.svc:8081
