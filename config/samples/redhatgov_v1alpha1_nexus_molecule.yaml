@@ -4,11 +4,12 @@ metadata:
   name: nexus-testing
 spec:
   nexus:
+    oauth:
+      enabled: false
     expose:
       ssl: false
       kind: Ingress
       uri: localhost
-      oauth: false
     image:
       src: sonatype/nexus3
       tag: latest

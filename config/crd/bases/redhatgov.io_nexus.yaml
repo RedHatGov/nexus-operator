@@ -54,11 +54,18 @@ spec:
                     description: |
                       Defines whether your Nexus instance should allow anonymous access
                     type: boolean
-                  adminUsers:
-                    description: Admin users to preload into Nexus 
-                    type: array
-                    items:
-                      type: string
+                  oauth:
+                    description: Settings for Utilizing OpenShift OAuth
+                    type: object
+                    properties:
+                      enabled:
+                        description: Whether to enable an oauth-proxy sidecar container
+                        type: boolean
+                      adminUsers:
+                        description: Local admin users to preload into Nexus. These should be existing OCP users.
+                        type: array
+                        items:
+                          type: string
                   expose:
                     description: Defines the ways in which Nexus should be exposed
                     type: object
@@ -76,9 +83,6 @@ spec:
                         pattern: ^[^{}/ :\\]+(?::\d+)?$
                       ssl:
                         description: Defines SSL/TLS state, if your IngressController/Router supports it
-                        type: boolean
-                      oauth:
-                        description: Include a sidecar to leverage OpenShift OAuth
                         type: boolean
                   image:
                     description: Defines the ways in which the Nexus image should be sourced and managed
