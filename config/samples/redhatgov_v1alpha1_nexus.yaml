@@ -15,6 +15,6 @@ spec:
     volumeSize: 10Gi
     oauth:
       enabled: true
-      adminUsers: 
+      adminUsers:
       - openshift-admin
   persistent: true
