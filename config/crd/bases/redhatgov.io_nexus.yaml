@@ -50,6 +50,15 @@ spec:
                 description: Defines the desired state of the Nexus Deployment
                 type: object
                 properties:
+                  allowAnonymousAccess:
+                    description: |
+                      Defines whether your Nexus instance should allow anonymous access
+                    type: boolean
+                  adminUsers:
+                    description: Admin users to preload into Nexus 
+                    type: array
+                    items:
+                      type: string
                   expose:
                     description: Defines the ways in which Nexus should be exposed
                     type: object
