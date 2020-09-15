@@ -25,7 +25,7 @@ spec:
         command:
           - bash
           - -c
-          - "mkdir -m777 -p /nexus-data/etc/; ln -s /opt/nexus/config/nexus.properties /nexus-data/etc/nexus.properties"
+          - "mkdir -m777 -p /nexus-data/etc/; ln -s /opt/nexus/config/nexus.properties /nexus-data/etc/nexus.properties || true"
         volumeMounts:
         - name: nexus-data
           mountPath: /nexus-data
@@ -40,6 +40,9 @@ spec:
           - '--openshift-service-account={{ _nexus_name }}'
           - '--upstream=http://localhost:8081'
           - '--cookie-secret=SECRET'
+{% for path in _nexus_bypass_auth_for %}
+          - '--bypass-auth-for={{ path }}'
+{% endfor %}
         ports:
           - name: public
             containerPort: 4180
