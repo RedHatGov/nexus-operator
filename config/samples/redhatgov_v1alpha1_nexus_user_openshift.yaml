@@ -1,0 +1,12 @@
+apiVersion: redhatgov.io/v1alpha1
+kind: NexusUser
+metadata:
+  name: nexususer1
+spec:
+  user:
+    username: user1
+    password: user1pwd
+    firstName: Nexus
+    lastName: User
+    email: user1@sample.net
+

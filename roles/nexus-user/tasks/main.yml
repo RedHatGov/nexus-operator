@@ -1,0 +1,34 @@
+---
+# Tasks file for Nexus
+
+- name: Check for Nexus CR object
+  k8s_info:
+    api_version: redhatgov.io/v1alpha1
+    namespace: "{{ _nexus_namespace }}"
+    kind: Nexus
+  register: nexus_cr_object
+
+- set_fact:
+    nexus_name: "{{ nexus_cr_object.resources[0].metadata.name }}"
+  when: nexus_cr_object.resources
+
+- name: Check for admin credential secret
+  k8s_info:
+    namespace: "{{ _nexus_namespace }}"
+    kind: Secret
+    name: "{{ nexus_name }}-admin-credentials"
+  register: nexus_admin_credentials
+  when: nexus_name is defined
+
+- set_fact:
+    nexus_admin_password: "{{ nexus_admin_credentials.resources[0].data.password | b64decode }}"
+  when: nexus_admin_credentials.resources
+
+- name: Add NexusUser
+  shell: >-
+    devsecops-api nexus add-user
+    http://{{ nexus_name }}-bypass.{{ _nexus_namespace }}.svc:8081
+    --login-username admin --login-password {{ nexus_admin_password }}
+    --usernames "{{ _nexususer.username }}"
+    --passwords "{{ _nexususer.password }}"
+  when: nexus_admin_password is defined

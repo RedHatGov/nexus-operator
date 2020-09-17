@@ -1,0 +1,5 @@
+---
+_nexus_state: present
+_nexus_namespace: nexus
+_nexus_name: nexus
+

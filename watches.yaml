@@ -3,3 +3,9 @@
   group: redhatgov.io
   kind: Nexus
   playbook: playbooks/nexus-operator.yml
+
+- version: v1alpha1
+  group: redhatgov.io
+  kind: NexusUser
+  playbook: playbooks/nexus-user.yml
+  reconcilePeriod: "0"
