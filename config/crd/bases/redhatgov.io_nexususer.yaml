@@ -66,5 +66,3 @@ spec:
             - user
             type: object
         type: object
-  
-                
