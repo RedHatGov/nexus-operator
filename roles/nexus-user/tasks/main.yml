@@ -1,5 +1,5 @@
 ---
-# Tasks file for Nexus
+# Tasks file for NexusUser
 
 - name: Check for Nexus CR object
   k8s_info:
@@ -11,6 +11,25 @@
 - set_fact:
     nexus_name: "{{ nexus_cr_object.resources[0].metadata.name }}"
   when: nexus_cr_object.resources
+
+- fail:
+    msg: "Nexus CR does not exist. Please create Nexus CR service."
+  when: nexus_name is undefined
+
+- name: Verify that nexus application is available
+  when:
+  - _nexus_name is defined
+  k8s_facts:
+    api_version: apps/v1
+    kind: Deployment
+    name: "{{ nexus_name }}"
+    namespace: "{{ _nexus_namespace }}"
+  register: r_deployment
+  until:
+  - r_deployment.resources[0].status.availableReplicas is defined
+  - r_deployment.resources[0].status.availableReplicas == 1
+  retries: 50
+  delay: 10
 
 - name: Check for admin credential secret
   k8s_info:
@@ -24,6 +43,10 @@
     nexus_admin_password: "{{ nexus_admin_credentials.resources[0].data.password | b64decode }}"
   when: nexus_admin_credentials.resources
 
+- fail:
+    msg: "Nexus admin password is undefined, retry later."
+  when: nexus_admin_password is undefined
+
 - name: Add NexusUser
   shell: >-
     devsecops-api nexus add-user
@@ -31,4 +54,3 @@
     --login-username admin --login-password {{ nexus_admin_password }}
     --usernames "{{ _nexususer.username }}"
     --passwords "{{ _nexususer.password }}"
-  when: nexus_admin_password is defined
