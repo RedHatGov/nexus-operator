@@ -1,0 +1,15 @@
+---
+# Persistent nexus deployment playbook.
+
+# The following variables come from the ansible-operator
+# - ansible_operator_meta.namespace
+
+- hosts: localhost
+  gather_facts: no
+  tasks:
+  - name: Add Nexus User
+    include_role:
+      name: ./roles/nexus-user
+    vars:
+      _nexus_namespace: "{{ ansible_operator_meta.namespace }}"
+      _nexususer: "{{ user }}"

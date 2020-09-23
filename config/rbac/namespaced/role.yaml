@@ -82,6 +82,8 @@ rules:
   resources:
   - nexus
   - nexus/status
+  - nexususers
+  - nexususers/status
   verbs:
   - create
   - update
