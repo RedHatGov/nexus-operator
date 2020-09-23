@@ -8,6 +8,7 @@ rules:
   - redhatgov.io
   resources:
   - nexus
+  - nexususers
   verbs:
   - get
   - list
@@ -16,5 +17,6 @@ rules:
   - redhatgov.io
   resources:
   - nexus/status
+  - nexususers/status
   verbs:
   - get
