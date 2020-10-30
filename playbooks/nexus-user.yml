@@ -9,7 +9,9 @@
   tasks:
   - name: Add Nexus User
     include_role:
-      name: ./roles/nexus-user
+      name: ./roles/nexus-ocp
+      tasks_from: user
+      defaults_from: config
     vars:
       _nexus_namespace: "{{ ansible_operator_meta.namespace }}"
       _nexususer: "{{ user }}"
