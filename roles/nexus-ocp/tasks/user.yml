@@ -1,0 +1,10 @@
+---
+- include: config.yml
+
+- name: Add NexusUser
+  shell: >-
+    devsecops-api nexus add-user
+    http://{{ nexus_name }}-bypass.{{ _nexus_namespace }}.svc:8081
+    --login-username admin --login-password {{ nexus_admin_password }}
+    --usernames "{{ _nexususer.username }}"
+    --passwords "{{ _nexususer.password }}"
