@@ -10,6 +10,7 @@ spec:
       ssl: false
       kind: Ingress
       uri: localhost
+      docker: false
     image:
       src: sonatype/nexus3
       tag: latest
