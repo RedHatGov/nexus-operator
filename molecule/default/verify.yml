@@ -44,8 +44,9 @@
           k8s_log:
             name: '{{ item.metadata.name }}'
             namespace: '{{ namespace }}'
-          loop: "{{ q('k8s', api_version='v1', kind='Pod', namespace=namespace, label_selector='app=sonarqube-testing') }}"
+          loop: "{{ q('k8s', api_version='v1', kind='Pod', namespace=namespace, label_selector='app=nexus-testing') }}"
           register: debug_app_logs
+
         - name: Output gathered resources
           debug:
             var: debug_resources
