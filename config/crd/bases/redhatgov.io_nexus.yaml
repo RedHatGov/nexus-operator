@@ -89,6 +89,9 @@ spec:
                       ssl:
                         description: Defines SSL/TLS state, if your IngressController/Router supports it
                         type: boolean
+                      docker:
+                        description: Create a separate route for interaction with Docker registries
+                        type: boolean
                   image:
                     description: Defines the ways in which the Nexus image should be sourced and managed
                     type: object
