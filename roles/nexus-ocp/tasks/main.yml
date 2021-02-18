@@ -25,6 +25,15 @@
   loop:
   - '{{ _nexus_expose_method }}'
 
+- name: Set Docker Route to {{ _nexus_state }}
+  when: '{{ _nexus_docker }}'
+  k8s:
+    state: "{{ _nexus_state }}"
+    merge_type:
+    - strategic-merge
+    - merge
+    definition: "{{ lookup('template', 'docker_route.yml.j2') | from_yaml }}"
+
 - name: Set PersistentVolumeClaim for Nexus to {{ _nexus_state }}
   when: _nexus_persistent|bool
   k8s:

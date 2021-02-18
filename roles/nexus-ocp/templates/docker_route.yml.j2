@@ -1,0 +1,16 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: "{{ _nexus_name }}-docker"
+  namespace: "{{ _nexus_namespace }}"
+  labels:
+    app: "{{ _nexus_name }}"
+spec:
+  to:
+    kind: Service
+    name: "{{ _nexus_name }}"
+  tls:
+    insecureEdgeTerminationPolicy: None
+    termination: edge
+  port:
+    targetPort: 8082
