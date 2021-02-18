@@ -1,6 +1,4 @@
 ---
-# Tasks file for NexusUser
-
 - name: Check for Nexus CR object
   k8s_info:
     api_version: redhatgov.io/v1alpha1
@@ -46,11 +44,3 @@
 - fail:
     msg: "Nexus admin password is undefined, retry later."
   when: nexus_admin_password is undefined
-
-- name: Add NexusUser
-  shell: >-
-    devsecops-api nexus add-user
-    http://{{ nexus_name }}-bypass.{{ _nexus_namespace }}.svc:8081
-    --login-username admin --login-password {{ nexus_admin_password }}
-    --usernames "{{ _nexususer.username }}"
-    --passwords "{{ _nexususer.password }}"
