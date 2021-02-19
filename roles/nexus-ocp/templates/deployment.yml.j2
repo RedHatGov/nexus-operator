@@ -56,6 +56,11 @@ spec:
         - containerPort: 8081
           protocol: TCP
           name: http
+{% if _nexus_docker|bool %}
+        - containerPort: 8082
+          protocol: TCP
+          name: docker
+{% endif %}
         readinessProbe:
           httpGet:
             path: /
