@@ -11,16 +11,19 @@ spec:
   ports:
   - name: nexus
     protocol: TCP
-{% if _nexus_oauth|bool %}
-    port: 4180
-    targetPort: 4180
-{% else %}
     port: 8081
     targetPort: 8081
+{% if _nexus_oauth|bool %}
+  - name: oauth
+    protocol: TCP
+    port: 4180
+    targetPort: 4180
 {% endif %}
+{% if _nexus_docker|bool %}
   - name: docker
     protocol: TCP
     port: 8082
     targetPort: 8082
+{% endif %}
   sessionAffinity: None
   type: ClusterIP
