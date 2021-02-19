@@ -17,3 +17,9 @@ spec:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
 {% endif %}
+  port:
+{% if _nexus_oauth|bool %}
+    targetPort: 4180
+{% else %}
+    targetPort: 8081
+{% endif %}

@@ -18,4 +18,8 @@ spec:
       - path: /
         backend:
           serviceName: "{{ _nexus_name }}"
+        {% if _nexus_oauth|bool %}
+          servicePort: 4180
+        {% else %}
           servicePort: 8081
+        {% endif %}
