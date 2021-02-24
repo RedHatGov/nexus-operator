@@ -48,3 +48,4 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 10
       terminationGracePeriodSeconds: 10
+      serviceAccountName: sa
