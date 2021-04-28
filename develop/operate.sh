@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_ROOT=$(dirname $(realpath $0))
-if [ $(basename "$SCRIPT_ROOT") = 'hack' ]; then
+if [ $(basename "$SCRIPT_ROOT") = 'develop' ]; then
     cd "$SCRIPT_ROOT/.."
 else
     cd "$SCRIPT_ROOT"
@@ -206,8 +206,8 @@ EXTRA_TAGS=()
 config=
 if [ -f operate.conf ]; then
     config=operate.conf
-elif [ -f hack/operate.conf ]; then
-    config=hack/operate.conf
+elif [ -f develop/operate.conf ]; then
+    config=develop/operate.conf
 fi
 if [ "$config" ]; then
     # This uses some simple python to read the .conf file in true ini format,

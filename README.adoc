@@ -10,9 +10,9 @@ It is implemented on top of the Red Hat https://sdk.operatorframework.io/[Operat
 
 == Building the Operator
 
-There is a script `hack/operate.sh` which will download the prerequisites (operator-sdk etc.), build the operator artifacts from operator-sdk defaults, package and push the operator container image, deploy the artifacts to a Kubernetes cluster, and create a `kind: Nexus` CR to deploy an instance. You should use the help page to look at what the various options do, but for the most part if you want to deploy Nexus to a cluster directly from this repo you could run `hack/operate.sh -d`.
+There is a script `develop/operate.sh` which will download the prerequisites (operator-sdk etc.), build the operator artifacts from operator-sdk defaults, package and push the operator container image, deploy the artifacts to a Kubernetes cluster, and create a `kind: Nexus` CR to deploy an instance. You should use the help page to look at what the various options do, but for the most part if you want to deploy Nexus to a cluster directly from this repo you could run `develop/operate.sh -d`.
 
-Before running the script make sure to update the location of the container image to a repository you have access to. If you decide to build your own container image for the operator, make sure to update `hack/operate.conf` with an updated container image location and add the `-p` flag to `operate.sh`.
+Before running the script make sure to update the location of the container image to a repository you have access to. If you decide to build your own container image for the operator, make sure to update `develop/operate.conf` with an updated container image location and add the `-p` flag to `operate.sh`.
 
 == Installation
 
@@ -26,7 +26,7 @@ Perform the following tasks as *cluster-admin*:
 +
 [source,sh]
 ----
-hack/operate.sh
+develop/operate.sh
 ----
 
 . Once the Operator pod is running the Operator is ready to start creating Nexus Servers.
@@ -34,14 +34,14 @@ hack/operate.sh
 +
 [source,sh]
 ----
-hack/operate.sh --deploy-cr
+develop/operate.sh --deploy-cr
 ----
 
 . To install the operator with RBAC scoped to a specific namespace, deploying a Role and RoleBinding instead of a ClusterRole and ClusterRoleBinding:
 +
 [source,sh]
 ----
-hack/operate.sh --overlay=namespaced --namespace=mynamespace
+develop/operate.sh --overlay=namespaced --namespace=mynamespace
 ----
 
 == Deploying a custom nexus instance using the Operator
@@ -112,14 +112,14 @@ In case you wish to uninstall the nexus Operator make sure that there are no mor
 
 [source,sh]
 ----
-hack/operate.sh --remove
+develop/operate.sh --remove
 ----
 
 == Notes on disconnected installations
 
-The Operator SDK makes heavy use of Kustomize for development and installation, but intends bundles to be generated for use in an operator catalog. This enables the Operator Lifecycle Manager, deployed onto your cluster, to install and configure operators with a simple `kind: Subscription` object, instead of a large collection of manifests. If you intend on using `hack/operate.sh` it expects you to be in a development environment. Operator installation from this script therefore expects access to the internet. This comes with one extra concern: If `kustomize` isn't in your path, it tries to download it from the internet and save it locally into a `.gitignore`d folder. If you intend on using `hack/operate.sh` to install the operator, you should also bring `kustomize` and place it in the `$PATH` of the user who will be running the script.
+The Operator SDK makes heavy use of Kustomize for development and installation, but intends bundles to be generated for use in an operator catalog. This enables the Operator Lifecycle Manager, deployed onto your cluster, to install and configure operators with a simple `kind: Subscription` object, instead of a large collection of manifests. If you intend on using `develop/operate.sh` it expects you to be in a development environment. Operator installation from this script therefore expects access to the internet. This comes with one extra concern: If `kustomize` isn't in your path, it tries to download it from the internet and save it locally into a `.gitignore`d folder. If you intend on using `develop/operate.sh` to install the operator, you should also bring `kustomize` and place it in the `$PATH` of the user who will be running the script.
 
-To change the image sources for all necessary images for `hack/operate.sh` to deploy the operator, you need to have the following images hosted in a container repository on your disconnected network:
+To change the image sources for all necessary images for `develop/operate.sh` to deploy the operator, you need to have the following images hosted in a container repository on your disconnected network:
 
 . quay.io/redhatgov/nexus-operator:latest
 . quay.io/redhatgov/nexus:latest
@@ -127,7 +127,7 @@ To change the image sources for all necessary images for `hack/operate.sh` to de
 
 The places where you must update those sources are then, respectively:
 
-. `hack/operate.conf`: IMG should point to the nexus-operator image in your environment _before_ running `hack/operate.sh`
+. `develop/operate.conf`: IMG should point to the nexus-operator image in your environment _before_ running `develop/operate.sh`
 . The `kind: nexus` custom resource manifest: `spec.nexus.image.src` and `spec.nexus.image.tag` should be updated
 
 == OLM installation using a custom catalog source

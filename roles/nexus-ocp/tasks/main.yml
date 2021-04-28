@@ -1,4 +1,11 @@
 ---
+- fail:
+    msg: "Must set spec.expose.uri when spec.expose.kind == 'Ingress' and spec.expose.ssl == True"
+  when:
+    - _nexus_ssl
+    - _nexus_expose_method == 'Ingress'
+    - _nexus_expose_uri == ''
+
 # Tasks file for Nexus
 - name: Set OpenShift objects for Nexus to {{ _nexus_state }}
   k8s:

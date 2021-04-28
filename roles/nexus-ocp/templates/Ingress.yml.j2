@@ -12,8 +12,7 @@ spec:
     - "{{ _nexus_expose_uri }}"
 {% endif %}
   rules:
-  - host: "{{ _nexus_expose_uri }}"
-    http:
+  - http:
       paths:
       - path: /
         backend:
@@ -22,4 +21,7 @@ spec:
           servicePort: 4180
 {% else %}
           servicePort: 8081
+{% endif %}
+{% if _nexus_expose_uri %}
+    host: "{{ _nexus_expose_uri }}"
 {% endif %}

@@ -8,6 +8,7 @@
 - Andy Krohg <akrohg@redhat.com>
 - Jay Flowers <jay.flowers@gmail.com>
 - David Anderson <david.anderson@redhat.com>
+- Adam Goossens <adam.goossens@gmail.com>
 
 ## Note
 
