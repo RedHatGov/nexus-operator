@@ -91,9 +91,17 @@
   delay: 60
   ignore_errors: true
 
-- name: Verify that Nexus failed to be created from the CR when appropriate
-  assert:
-    that: namespace_modded_cr.resources[0].status is not defined == (scope == "namespace")
+- fail:
+    msg: "CR reconciled in additional namespace when at namespace scope."
+  when:
+    - namespace_modded_cr.resources[0].status is defined
+    - scope == "namespace"
+
+- fail:
+    msg: "CR NOT reconciled in additional namespace when at cluster scope."
+  when:
+    - namespace_modded_cr.resources[0].status is not defined
+    - scope == "cluster"
 
 # TODO:
 #   - Validate Nexus can be used
