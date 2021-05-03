@@ -68,5 +68,5 @@ jobs:
       - name: Build, bundle, and push
         run: |
           pip3 install --user --upgrade setuptools wheel pip
-          hack/operate.sh --push-images --bundle --extra-tag=latest --verbose --formatter
+          develop/operate.sh --push-images --bundle --extra-tag=latest --verbose --formatter
         if: github.ref == 'refs/heads/main'
