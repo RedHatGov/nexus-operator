@@ -1,4 +1,4 @@
-= nexus Operator
+= Nexus Operator
 
 == Overview
 
@@ -122,7 +122,7 @@ The Operator SDK makes heavy use of Kustomize for development and installation, 
 To change the image sources for all necessary images for `develop/operate.sh` to deploy the operator, you need to have the following images hosted in a container repository on your disconnected network:
 
 . quay.io/redhatgov/nexus-operator:latest
-. quay.io/redhatgov/nexus:latest
+. registry.connect.redhat.com/sonatype/nexus-repository-manager:latest
 . Some PostgreSQL 10 image that either behaves like the Red Hat PostgreSQL 10 RHEL 8 image or the docker.io/library/postgres:10 image.
 
 The places where you must update those sources are then, respectively:
