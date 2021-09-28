@@ -36,57 +36,6 @@ function on_exit() {
     rm -f $log
 }
 
-# Stage some logging
-log=$(mktemp)
-if echo "$*" | grep -qF -- '-v' || echo "$*" | grep -qF -- '--verbose'; then
-    exec 7> >(tee -a "$log" |& sed 's/^/\n/' >&2)
-    FORMATTER_PAD_RESULT=0
-else
-    exec 7>$log
-fi
-echo "Logging initialized $(now)" >&7
-
-# Set some traps
-trap 'on_error $LINENO $?' ERR
-trap 'on_exit' EXIT
-
-# Get some output helpers to keep things clean-ish
-if which formatter &>/dev/null; then
-    # I keep this on my system. If you want, you can install it yourself:
-    #   mkdir -p ~/.local/bin
-    #   curl -o ~/.local/bin/formatter https://raw.githubusercontent.com/solacelost/output-formatter/modern-only/formatter
-    #   chmod +x ~/.local/bin/formatter
-    #   echo "$PATH" | grep -qF "$(realpath ~/.local/bin)" || export PATH="$(realpath ~/.local/bin):$PATH"
-    . $(which formatter)
-else
-    if echo "$*" | grep -qF -- '--formatter'; then
-        mkdir -p ~/.local/bin
-        export PATH=~/.local/bin:"$PATH"
-        curl -o ~/.local/bin/formatter https://raw.githubusercontent.com/solacelost/output-formatter/modern-only/formatter
-        chmod +x ~/.local/bin/formatter
-        . ~/.local/bin/formatter
-    else
-        # These will work as a poor-man's approximation in just a few lines
-        function error_run() {
-            echo -n "$1"
-            shift
-            eval "$@" >&7 2>&1 && echo '  [ SUCCESS ]' || { ret=$? ; echo '  [  ERROR  ]' ; return $ret ; }
-        }
-        function warn_run() {
-            echo -n "$1"
-            shift
-            eval "$@" >&7 2>&1 && echo '  [ SUCCESS ]' || { ret=$? ; echo '  [ WARNING ]' ; return $ret ; }
-        }
-        function wrap() {
-            if [ $# -gt 0 ]; then
-                echo "${@}" | fold -s
-            else
-                fold -s
-            fi
-        }
-    fi
-fi
-
 function print_usage() {
     wrap "usage: $(basename $0) [-h|--help] | " \
          "[--formatter] " \
@@ -201,20 +150,8 @@ CHANNELS=
 DEVLEOP=
 BUNDLE=
 EXTRA_TAGS=()
-
-# Load the configuration
-config=
-if [ -f operate.conf ]; then
-    config=operate.conf
-elif [ -f develop/operate.conf ]; then
-    config=develop/operate.conf
-fi
-if [ "$config" ]; then
-    # This uses some simple python to read the .conf file in true ini format,
-    #   outputting the variables in an exportable fashion so we can eval them
-    #   in the warn_run.
-    warn_run "Loading configuration from operate.conf" source $config ||:
-fi
+FORMATTER=false
+VERBOSE=false
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -223,10 +160,10 @@ while [ $# -gt 0 ]; do
             exit 0
             ;;
         --formatter)
-            true
+            FORMATTER=true
             ;;
         -v|--verbose)
-            true
+            VERBOSE=true
             ;;
         -r|--remove)
             REMOVE_OPERATOR=true
@@ -289,6 +226,71 @@ while [ $# -gt 0 ]; do
             ;;
     esac ; shift
 done
+
+# Stage some logging
+log=$(mktemp)
+if echo "$*" | grep -qF -- '-v' || echo "$*" | grep -qF -- '--verbose'; then
+    exec 7> >(tee -a "$log" |& sed 's/^/\n/' >&2)
+    FORMATTER_PAD_RESULT=0
+else
+    exec 7>$log
+fi
+echo "Logging initialized $(now)" >&7
+
+# Set some traps
+trap 'on_error $LINENO $?' ERR
+trap 'on_exit' EXIT
+
+# Get some output helpers to keep things clean-ish
+if which formatter &>/dev/null; then
+    # I keep this on my system. If you want, you can install it yourself:
+       mkdir -p ~/.local/bin
+       curl -o ~/.local/bin/formatter https://raw.githubusercontent.com/solacelost/output-formatter/modern-only/formatter
+       chmod +x ~/.local/bin/formatter
+       echo "$PATH" | grep -qF "$(realpath ~/.local/bin)" || export PATH="$(realpath ~/.local/bin):$PATH"
+    . $(which formatter)
+else
+    if [[ $FORMATTER == "true" ]]; then
+        mkdir -p ~/.local/bin
+        export PATH=~/.local/bin:"$PATH"
+        curl -o ~/.local/bin/formatter https://raw.githubusercontent.com/solacelost/output-formatter/modern-only/formatter
+        chmod +x ~/.local/bin/formatter
+        . ~/.local/bin/formatter
+    else
+        # These will work as a poor-man's approximation in just a few lines
+        function error_run() {
+            echo -n "$1"
+            shift
+            eval "$@" >&7 2>&1 && echo '  [ SUCCESS ]' || { ret=$? ; echo '  [  ERROR  ]' ; return $ret ; }
+        }
+        function warn_run() {
+            echo -n "$1"
+            shift
+            eval "$@" >&7 2>&1 && echo '  [ SUCCESS ]' || { ret=$? ; echo '  [ WARNING ]' ; return $ret ; }
+        }
+        function wrap() {
+            if [ $# -gt 0 ]; then
+                echo "${@}" | fold -s
+            else
+                fold -s
+            fi
+        }
+    fi
+fi
+
+# Load the configuration
+config=
+if [ -f operate.conf ]; then
+    config=operate.conf
+elif [ -f develop/operate.conf ]; then
+    config=develop/operate.conf
+fi
+if [ "$config" ]; then
+    # This uses some simple python to read the .conf file in true ini format,
+    #   outputting the variables in an exportable fashion so we can eval them
+    #   in the warn_run.
+    warn_run "Loading configuration from operate.conf" source $config ||:
+fi
 
 if [ -n "$BUILD_ONLY" -a -n "$PUSH_ONLY" ]; then
     echo "Unable to build and push only" >&2
