@@ -93,7 +93,9 @@ oc get nexus
 oc get route
 ----
 
-. Use the hostname returned in your Web Browser to open the nexus UI (default User ID is `admin` with password `admin`).
+. The admin user credentials are stored in a secret. The secret is created once nexus comes online. In the example above, the nexus repo is named nexus-sample, so the secret is called nexus-sample-admin-credentials
+. Use ```oc get -o yaml secret nexus-sample-admin-credentials``` to see the base64 encoded values of the admin username and password.
+. Decode the values and use them to login to the nexus repo.
 
 == Deleting a Nexus instance
 
@@ -123,7 +125,8 @@ To change the image sources for all necessary images for `develop/operate.sh` to
 
 . quay.io/redhatgov/nexus-operator:latest
 . registry.connect.redhat.com/sonatype/nexus-repository-manager:latest
-. Some PostgreSQL 10 image that either behaves like the Red Hat PostgreSQL 10 RHEL 8 image or the docker.io/library/postgres:10 image.
+. registry.access.redhat.com/ubi8/ubi-minimal:latest
+. docker.io/openshift/oauth-proxy:latest
 
 The places where you must update those sources are then, respectively:
 
