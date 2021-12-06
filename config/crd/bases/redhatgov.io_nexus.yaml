@@ -147,6 +147,15 @@ spec:
                             description: How much memory, measured in bytes, should Nexus be limited to
                             type: string
                             pattern: ^[0-9]+[EPTGMK]?i?$
+                  jvm:
+                    description: Defines the JVM parameters
+                    type: object
+                    properties:
+                      memory:
+                        description: |
+                          How much memory, measured in bytes, should the JVM allocate
+                        type: string
+                        pattern: ^[0-9]+[gmk]?$
           status:
             description: Status defines the observed state of Nexus
             type: object

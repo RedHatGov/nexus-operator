@@ -25,6 +25,7 @@ This role is designed to set up Nexus Repository Manager on an OpenShift or Kube
 |_nexus_expose_method           |Route                        |No           |Options include `Route`, `Ingress`, and `None`
 |_nexus_expose_uri              |""                           |No           |The URI to expose via Route/Ingress.
 |_nexus_ssl                     |True                         |No           |Set up HTTPS for the Nexus Route/Ingress
+|_nexus_jvm_memory              |512m                         |No           |Memory allocated for the JVM
 |====
 
 == Dependencies

@@ -90,7 +90,7 @@ spec:
             memory: "{{ _nexus_memory_limit }}"
         env:
         - name: INSTALL4J_ADD_VM_PARAMS
-          value: -Xms256m -Xmx256m -XX:MaxDirectMemorySize=256m -Djava.util.prefs.userRoot=${NEXUS_DATA}/javaprefs
+          value: -Xms{{ _nexus_jvm_memory }} -Xmx{{ _nexus_jvm_memory }} -XX:MaxDirectMemorySize={{ _nexus_jvm_memory }} -Djava.util.prefs.userRoot=${NEXUS_DATA}/javaprefs
         volumeMounts:
         - name: nexus-data
           mountPath: /nexus-data
