@@ -11,41 +11,41 @@ on:
       - main
 
 jobs:
-  test-cluster:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          submodules: recursive
-      - name: Kind
-        uses: engineerd/setup-kind@v0.5.0
-        with:
-          config: molecule/kind-cluster/files/kind-config.yml
-          name: osdk-test
-          version: v0.9.0
-      - name: Prereq setup
-        run: develop/ci-setup.sh
-      - name: Test
-        run: develop/ci-test.sh kind-cluster
+  # test-cluster:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         submodules: recursive
+  #     - name: Kind
+  #       uses: engineerd/setup-kind@v0.5.0
+  #       with:
+  #         config: molecule/kind-cluster/files/kind-config.yml
+  #         name: osdk-test
+  #         version: v0.9.0
+  #     - name: Prereq setup
+  #       run: develop/ci-setup.sh
+  #     - name: Test
+  #       run: develop/ci-test.sh kind-cluster
 
-  test-namespace:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          submodules: recursive
-      - name: Kind
-        uses: engineerd/setup-kind@v0.5.0
-        with:
-          config: molecule/kind-cluster/files/kind-config.yml
-          name: osdk-test
-          version: v0.9.0
-      - name: Prereq setup
-        run: develop/ci-setup.sh
-      - name: Test
-        run: develop/ci-test.sh kind-namespace
+  # test-namespace:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         submodules: recursive
+  #     - name: Kind
+  #       uses: engineerd/setup-kind@v0.5.0
+  #       with:
+  #         config: molecule/kind-cluster/files/kind-config.yml
+  #         name: osdk-test
+  #         version: v0.9.0
+  #     - name: Prereq setup
+  #       run: develop/ci-setup.sh
+  #     - name: Test
+  #       run: develop/ci-test.sh kind-namespace
 
   release:
     needs: [test-cluster, test-namespace]
