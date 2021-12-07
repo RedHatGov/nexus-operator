@@ -48,7 +48,7 @@ jobs:
   #       run: develop/ci-test.sh kind-namespace
 
   release:
-    needs: [test-cluster, test-namespace]
+    # needs: [test-cluster, test-namespace]
     if: >
       github.event_name != 'pull_request' &&
       (github.ref == 'refs/heads/main')
