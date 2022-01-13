@@ -7,9 +7,11 @@ else
     cd "$SCRIPT_ROOT"
 fi
 
+DOCKER_CMD=docker
 if ! which docker &>/dev/null; then
     if which podman &>/dev/null; then
         function docker { podman "${@}" ; }
+        DOCKER_CMD=podman
     else
         echo "We may not be able to do docker things..." >&2
     fi
@@ -347,12 +349,12 @@ function push_images() {
     # Push the images to the logged in repository
     if [ -z "$DEVELOP" ]; then
         for tag in $VERSION ${EXTRA_TAGS[@]}; do
-            error_run "Building $IMG:$tag" make docker-build IMG=$IMG:$tag || return 1
-            error_run "Pushing $IMG:$tag" make docker-push IMG=$IMG:$tag || return 1
+            error_run "Building $IMG:$tag" make docker-build IMG=$IMG:$tag DOCKER_CMD=${DOCKER_CMD} || return 1
+            error_run "Pushing $IMG:$tag" make docker-push IMG=$IMG:$tag DOCKER_CMD=${DOCKER_CMD} || return 1
         done
     else
-        error_run "Building $IMG:develop" make docker-build IMG=$IMG:develop || return 1
-        error_run "Pushing $IMG:develop" make docker-push IMG=$IMG:develop || return 1
+        error_run "Building $IMG:develop" make docker-build IMG=$IMG:develop DOCKER_CMD=${DOCKER_CMD} || return 1
+        error_run "Pushing $IMG:develop" make docker-push IMG=$IMG:develop DOCKER_CMD=${DOCKER_CMD} || return 1
     fi
 }
 
@@ -370,8 +372,8 @@ function install_operator() {
     #   cluster
     if [ -z "$operator_installed" ]; then
         validate_cluster || return 1
-        error_run "Installing operator resources" make install || return 1
-        error_run "Deploying operator" make deploy IMG=$IMG:latest OVERLAY=$OVERLAY || return 1
+        error_run "Installing operator resources" make install DOCKER_CMD=${DOCKER_CMD} || return 1
+        error_run "Deploying operator" make deploy IMG=$IMG:latest OVERLAY=$OVERLAY DOCKER_CMD=${DOCKER_CMD} || return 1
     fi
     operator_installed=true
 }
@@ -381,8 +383,8 @@ function uninstall_operator() {
     #   logged in cluster
     validate_cluster || return 1
     undeploy_cr
-    warn_run "Undeploying operator" make undeploy IMG=$IMG:latest OVERLAY=$OVERLAY || :
-    warn_run "Uninstalling operator resources" make uninstall || :
+    warn_run "Undeploying operator" make undeploy IMG=$IMG:latest OVERLAY=$OVERLAY DOCKER_CMD=${DOCKER_CMD} || :
+    warn_run "Uninstalling operator resources" make uninstall DOCKER_CMD=${DOCKER_CMD} || :
     operator_installed=
 }
 
@@ -404,7 +406,7 @@ function undeploy_cr() {
 
 function validate_kustomize() {
     if [ -z "$kustomize_validated" ]; then
-        error_run "Validating kustomize is installed/downloaded" make kustomize || return 1
+        error_run "Validating kustomize is installed/downloaded" make kustomize DOCKER_CMD=${DOCKER_CMD} || return 1
         project_root=$(pwd)
         which kustomize &>/dev/null || function kustomize() { "${project_root}/bin/kustomize" "${@}" ; }
     fi

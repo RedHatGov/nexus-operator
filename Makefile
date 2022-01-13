@@ -33,6 +33,8 @@ IMG ?= controller:latest
 
 OVERLAY ?= default
 
+DOCKER_CMD ?= docker
+
 all: docker-build
 
 # Run against the configured Kubernetes cluster in ~/.kube/config
@@ -58,11 +60,11 @@ undeploy: kustomize
 
 # Build the docker image
 docker-build:
-	docker build -t ${IMG} .
+	${DOCKER_CMD} build -t ${IMG} .
 
 # Push the docker image
 docker-push:
-	docker push ${IMG}
+	${DOCKER_CMD} push ${IMG}
 
 PATH  := $(PATH):$(PWD)/bin
 SHELL := env PATH=$(PATH) /bin/sh
@@ -114,4 +116,4 @@ bundle: kustomize
 # Build the bundle image.
 .PHONY: bundle-build
 bundle-build:
-	docker build -f bundle.Dockerfile -t $(BUNDLE_IMG) .
+	${DOCKER_CMD} build -f bundle.Dockerfile -t $(BUNDLE_IMG) .
