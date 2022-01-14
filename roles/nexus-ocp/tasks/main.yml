@@ -73,6 +73,21 @@
     name: "{{ _nexus_name }}-admin-credentials"
   register: nexus_admin_credentials
 
+- name: Verify saved credentials
+  block:
+  - set_fact:
+      nexus_admin_password: "{{ nexus_admin_credentials.resources[0].data.password | b64decode }}"
+
+  - name: Check nexus status
+    uri:
+      url: "http://{{ _nexus_name }}.{{ _nexus_namespace }}.svc:8081/service/rest/v1/status/check"
+      user: admin
+      password: "{{ nexus_admin_password }}"
+      force_basic_auth: yes
+    ignore_errors: yes
+    register: nexus_status_check_admin_credentials
+  when: nexus_admin_credentials.resources
+
 - name: Get the admin password from the nexus pod
   block:
     - name: Get the nexus pod
@@ -95,16 +110,17 @@
 
     - set_fact:
         default_password: '{{ admin_password_file.stdout }}'
-        nexus_admin_password: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
 
-    - name: Create nexus-admin-credentials Secret
-      k8s:
-        definition: "{{ lookup('template', 'secret.yml.j2') | from_yaml }}"
-  when: not nexus_admin_credentials.resources
+    - name: Generate and save credentials secret
+      block:
+      - set_fact:
+          nexus_admin_password: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
+      - name: Create nexus-admin-credentials Secret
+        k8s:
+          definition: "{{ lookup('template', 'secret.yml.j2') | from_yaml }}"
+      when: not nexus_admin_credentials.resources
 
-- set_fact:
-    nexus_admin_password: "{{ nexus_admin_credentials.resources[0].data.password | b64decode }}"
-  when: nexus_admin_credentials.resources
+  when: (not nexus_admin_credentials.resources) or (nexus_status_check_admin_credentials.status != 200)
 
 - name: Add script to configure server
   shell: >-
