@@ -24,3 +24,6 @@ _nexus_route: "{{ _nexus_expose_uri }}"
 _nexus_ssl: True
 
 _nexus_jvm_memory: 512m
+
+_oauth-proxy_image: registry.redhat.io/openshift4/ose-oauth-proxy
+_oauth-proxy_image_tag: latest
