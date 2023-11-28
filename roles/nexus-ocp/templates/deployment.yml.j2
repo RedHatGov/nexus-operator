@@ -32,7 +32,7 @@ spec:
       containers:
 {% if _nexus_oauth|bool %}
       - name: oauth-proxy
-        image: 'openshift/oauth-proxy:latest'
+        image: "{{ _oauth-proxy_image }}:{{ _oauth-proxy_image_tag }}"
         args:
           - '--https-address='
           - '--http-address=:4180'
