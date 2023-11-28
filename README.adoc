@@ -126,7 +126,7 @@ To change the image sources for all necessary images for `develop/operate.sh` to
 . quay.io/redhatgov/nexus-operator:latest
 . registry.connect.redhat.com/sonatype/nexus-repository-manager:latest
 . registry.access.redhat.com/ubi8/ubi-minimal:latest
-. docker.io/openshift/oauth-proxy:latest
+. registry.redhat.io/openshift4/ose-oauth-proxy:latest
 
 The places where you must update those sources are then, respectively:
 
